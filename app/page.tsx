@@ -1,13 +1,7 @@
-import { createServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 
-export default async function RootPage() {
-  const supabase = createServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+export const dynamic = 'force-dynamic'
 
-  if (session) {
-    redirect('/dashboard')
-  } else {
-    redirect('/auth/login')
-  }
+export default function RootPage() {
+  redirect('/auth/login')
 }
