@@ -2,6 +2,10 @@ import { createClientComponentClient, createServerComponentClient } from '@supab
 import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder-service-key'
+
 export type Database = {
   public: {
     Tables: {
@@ -86,7 +90,7 @@ export const createServerClient = () =>
 // Service role client (API routes only — never expose to client)
 export const createServiceClient = () =>
   createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_KEY,
     { auth: { autoRefreshToken: false, persistSession: false } }
   )
