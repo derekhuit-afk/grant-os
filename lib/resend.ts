@@ -1,6 +1,9 @@
 import { Resend } from 'resend'
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy init — never instantiated at build time, only at request time
+function getResend(): Resend {
+  return new Resend(process.env.RESEND_API_KEY || 'placeholder')
+}
 
 const FROM = process.env.EMAIL_FROM || 'Grant OS <noreply@grantos.ai>'
 
@@ -13,7 +16,7 @@ export async function sendWelcomeEmail({
   orgName: string
   tier: string
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: 'Welcome to Grant OS — your federal grant intelligence platform',
@@ -52,7 +55,7 @@ export async function sendSubscriptionConfirmation({
   amount: number
   nextBillingDate: string
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: `Grant OS — subscription confirmed (${tier} plan)`,
@@ -84,7 +87,7 @@ export async function sendOnboardingDay3({
   to: string
   orgName: string
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: 'Have you tried the Grant Discovery Engine yet?',
@@ -122,7 +125,7 @@ export async function sendAttestationConfirmation({
   attestedAt: string
   attestationId: string
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: 'Grant OS — AI content attestation confirmed',

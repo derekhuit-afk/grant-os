@@ -1,60 +1,68 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 const PUBLIC_ROUTES = [
-  '/auth/login',
-  '/auth/signup',
-  '/privacy',
-  '/terms',
+  '/auth/login', '/auth/signup', '/privacy', '/terms',
   '/api/stripe/webhook',
 ]
 
-const ONBOARDING_ROUTE = '/onboarding'
-
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
-  const { data: { session } } = await supabase.auth.getSession()
+  let supabaseResponse = NextResponse.next({ request: req })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return req.cookies.getAll() },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => req.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({ request: req })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options))
+        },
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = req.nextUrl
 
-  // Allow public routes through
-  if (PUBLIC_ROUTES.some(r => pathname.startsWith(r))) return res
+  // Public routes — pass through
+  if (PUBLIC_ROUTES.some(r => pathname.startsWith(r))) {
+    return supabaseResponse
+  }
 
-  // No session → redirect to login
-  if (!session) {
+  // No session → login
+  if (!user) {
     const loginUrl = req.nextUrl.clone()
     loginUrl.pathname = '/auth/login'
     loginUrl.searchParams.set('redirectTo', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
-  // Check subscription status for dashboard routes
-  if (pathname.startsWith('/dashboard') ||
-      pathname.startsWith('/discovery') ||
-      pathname.startsWith('/builder') ||
-      pathname.startsWith('/pipeline') ||
-      pathname.startsWith('/compliance') ||
-      pathname.startsWith('/profile')) {
+  // Dashboard routes — check onboarding + subscription
+  const isDashboard = ['/dashboard','/discovery','/builder','/pipeline','/compliance','/profile']
+    .some(r => pathname.startsWith(r))
 
+  if (isDashboard) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('onboarding_complete, subscription_status')
-      .eq('id', session.user.id)
+      .eq('id', user.id)
       .single()
 
-    // Redirect to onboarding if not complete
-    if (profile && !profile.onboarding_complete && pathname !== ONBOARDING_ROUTE) {
-      return NextResponse.redirect(new URL(ONBOARDING_ROUTE, req.url))
+    if (profile && !profile.onboarding_complete && pathname !== '/onboarding') {
+      return NextResponse.redirect(new URL('/onboarding', req.url))
     }
 
-    // Redirect to billing if subscription inactive
     if (profile && profile.subscription_status !== 'active' && pathname !== '/billing') {
       return NextResponse.redirect(new URL('/billing', req.url))
     }
   }
 
-  return res
+  return supabaseResponse
 }
 
 export const config = {
