@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase'
+import { createServerClient } from '@/lib/supabase-server'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import OrgProfileClient from './OrgProfileClient'
 export const dynamic = 'force-dynamic'

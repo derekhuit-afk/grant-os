@@ -1,6 +1,5 @@
-import { createClientComponentClient, createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key'
@@ -83,9 +82,8 @@ export type Database = {
 export const createBrowserClient = () =>
   createClientComponentClient<Database>()
 
-// Server-side Supabase client (Server Components)
-export const createServerClient = () =>
-  createServerComponentClient<Database>({ cookies })
+// Server-side Supabase client — import from lib/supabase-server.ts in Server Components
+// Do NOT import createServerClient here — next/headers cannot be bundled with client code
 
 // Service role client (API routes only — never expose to client)
 export const createServiceClient = () =>
