@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createCheckoutSession, type PricingTier, type BillingInterval } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     const { tier, interval, email, orgName } = await req.json()
@@ -11,15 +13,13 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = createServiceClient()
-
-    // Check if Stripe customer already exists
     const { data: profile } = await supabase
       .from('profiles')
       .select('stripe_customer_id')
       .eq('email', email)
       .single()
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://grantos.ai'
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://grant-os.vercel.app'
 
     const session = await createCheckoutSession({
       customerId: profile?.stripe_customer_id || undefined,

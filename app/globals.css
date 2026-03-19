@@ -14,7 +14,6 @@
     --border: #D4DDD7;
   }
   body { @apply text-gray-900; }
-  h1, h2, h3 { font-family: 'Libre Baskerville', serif; }
 }
 
 @layer components {
@@ -25,9 +24,6 @@
   .btn-outline {
     @apply border-2 border-[#0F2D1F] text-[#0F2D1F] px-6 py-3 rounded-md font-semibold text-sm
            hover:bg-[#0F2D1F] hover:text-white transition-colors;
-  }
-  .btn-ghost {
-    @apply text-[#3B6E50] font-medium text-sm hover:text-[#0F2D1F] transition-colors;
   }
   .card {
     @apply bg-white border border-[#D4DDD7] rounded-xl p-6;
@@ -40,7 +36,4 @@
   .label {
     @apply block text-sm font-semibold text-[#0F2D1F] mb-1.5;
   }
-  .badge-active { @apply inline-flex items-center gap-1.5 bg-green-light text-green-sage text-xs font-semibold px-3 py-1 rounded-full; }
-  .badge-warning { @apply inline-flex items-center gap-1.5 bg-yellow-50 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full; }
-  .badge-error { @apply inline-flex items-center gap-1.5 bg-red-50 text-red-700 text-xs font-semibold px-3 py-1 rounded-full; }
 }

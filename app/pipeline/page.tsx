@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import PipelineClient from './PipelineClient'
+export const dynamic = 'force-dynamic'
 
 export default async function PipelinePage() {
   const supabase = createServerClient()

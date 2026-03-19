@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import DiscoveryClient from './DiscoveryClient'
+export const dynamic = 'force-dynamic'
 
 export default async function DiscoveryPage() {
   const supabase = createServerClient()

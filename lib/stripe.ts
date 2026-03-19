@@ -1,9 +1,16 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-04-10',
-  typescript: true,
-})
+// Lazy initialization — never called at build time, only at request time
+let _stripe: Stripe | null = null
+
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY
+    if (!key) throw new Error('STRIPE_SECRET_KEY is not set')
+    _stripe = new Stripe(key, { apiVersion: '2024-04-10', typescript: true })
+  }
+  return _stripe
+}
 
 export type PricingTier =
   | 'seed' | 'grow' | 'scale'
@@ -128,7 +135,7 @@ export const TIERS: Record<PricingTier, TierConfig> = {
 }
 
 export function getPriceId(tier: PricingTier, interval: BillingInterval): string {
-  const key = `STRIPE_PRICE_${tier.toUpperCase()}_${interval.toUpperCase()}` as keyof NodeJS.ProcessEnv
+  const key = `STRIPE_PRICE_${tier.toUpperCase()}_${interval.toUpperCase()}`
   const priceId = process.env[key]
   if (!priceId) throw new Error(`Missing Stripe price ID for ${tier} ${interval}`)
   return priceId
@@ -148,7 +155,8 @@ export async function createCheckoutSession({
   successUrl: string
   cancelUrl: string
   customerEmail?: string
-}): Promise<Stripe.Checkout.Session> {
+}) {
+  const stripe = getStripe()
   const priceId = getPriceId(tier, interval)
 
   return stripe.checkout.sessions.create({
@@ -158,9 +166,7 @@ export async function createCheckoutSession({
     line_items: [{ price: priceId, quantity: 1 }],
     success_url: successUrl,
     cancel_url: cancelUrl,
-    subscription_data: {
-      metadata: { tier, interval },
-    },
+    subscription_data: { metadata: { tier, interval } },
     metadata: { tier, interval },
     allow_promotion_codes: true,
     billing_address_collection: 'required',

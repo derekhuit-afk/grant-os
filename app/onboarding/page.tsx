@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@/lib/supabase'
+export const dynamic = 'force-dynamic'
 
 const STEPS = [
   { id: 1, title: 'Organization profile', description: 'Tell us about your organization' },

@@ -1,6 +1,7 @@
 import { createServerClient } from '@/lib/supabase'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 
 const REGS = [
   { code: '2 CFR Part 200', label: 'OMB Uniform Guidance', description: 'Governs all federal grants — cost principles, procurement, reporting, audit requirements.' },
