@@ -1,0 +1,18 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@grantos-supabase-url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@grantos-supabase-anon-key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@grantos-supabase-service-role-key",
+    "STRIPE_SECRET_KEY": "@grantos-stripe-secret-key",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@grantos-stripe-publishable-key",
+    "STRIPE_WEBHOOK_SECRET": "@grantos-stripe-webhook-secret",
+    "ANTHROPIC_API_KEY": "@grantos-anthropic-api-key",
+    "RESEND_API_KEY": "@grantos-resend-api-key",
+    "NEXT_PUBLIC_APP_URL": "@grantos-app-url"
+  }
+}
